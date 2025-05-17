@@ -689,19 +689,47 @@ body.premium-theme .content-section {
   padding: 0.5rem;
   margin-bottom: 1rem;
 }
-/* Nút switch phiên bản */
-.switch-btn {
+
+/* Toggle Switch */
+.switch-toggle {
+  display: flex;
+  align-items: center;
   margin-right: 12px;
-  background: #eee;
-  color: #333;
-  border: none;
-  border-radius: 8px;
-  padding: 0.4rem 1rem;
-  font-size: 1rem;
   cursor: pointer;
-  transition: background 0.2s;
+  user-select: none;
 }
-.switch-btn:hover {
-  background: #ddd;
+.switch-toggle input {
+  display: none;
+}
+.switch-toggle .slider {
+  width: 36px;
+  height: 20px;
+  background: #ccc;
+  border-radius: 12px;
+  position: relative;
+  transition: background 0.2s;
+  margin-right: 8px;
+}
+.switch-toggle .slider:before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.switch-toggle input:checked + .slider {
+  background: #4caf50;
+}
+.switch-toggle input:checked + .slider:before {
+  transform: translateX(16px);
+}
+.switch-toggle .switch-label {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 500;
 }
 
