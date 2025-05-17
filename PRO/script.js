@@ -778,7 +778,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const toggle = document.getElementById('switch-version-toggle');
   if (!toggle) return;
 
-  // Nếu đang ở PRO thì bật toggle (dành cho PRO/index.html)
+  // Đặt trạng thái toggle dựa trên đường dẫn
   if (window.location.pathname.includes('/PRO/')) {
     toggle.checked = true;
     toggle.nextElementSibling.nextElementSibling.textContent = "PRO";
@@ -790,12 +790,14 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   toggle.addEventListener('change', function() {
+    // Lấy base URL đến thư mục cha (Momentum)
+    const base = window.location.origin + window.location.pathname.split('/').slice(0, -2).join('/') + '/';
     if (toggle.checked) {
       // Sang PRO
-      window.location.href = window.location.pathname.replace('/NORMAL/', '/PRO/');
+      window.location.href = base + 'PRO/';
     } else {
       // Sang NORMAL
-      window.location.href = window.location.pathname.replace('/PRO/', '/NORMAL/');
+      window.location.href = base + 'NORMAL/';
     }
   });
 });
