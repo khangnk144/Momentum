@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ocean Focus</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <audio id="timer-alarm" preload="auto">
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="ambient-sound" loop preload="auto">
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-relaxing-rain-loop-1256.mp3" type="audio/mpeg">
+  </audio>
+</head>
+<body>
+  <div class="background-overlay"></div>
+  <div id="app">
+    <!-- Menu Button -->
+    <div class="menu-btn">
+      <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Side Menu -->
+    <div id="side-menu">
+      <div class="menu-header">
+  <h3>Menu</h3>
+  <label class="switch-toggle" title="Chuyển sang NORMAL">
+    <input type="checkbox" id="switch-version-toggle">
+    <span class="slider"></span>
+    <span class="switch-label">PRO</span>
+  </label>
+  <button id="close-menu">&times;</button>
+</div>
+      <div class="menu-items">
+        <button class="menu-item" data-section="focus">
+          <i class="fas fa-clock"></i> Focus Timer
+        </button>
+        <button class="menu-item" data-section="todo">
+          <i class="fas fa-tasks"></i> To-Do List
+        </button>
+        <button class="menu-item" data-section="weather">
+          <i class="fas fa-cloud-sun"></i> Weather
+        </button>
+        <button class="menu-item" data-section="notes">
+          <i class="fas fa-edit"></i> Quick Notes
+        </button>
+        <button class="menu-item" data-section="inspiration">
+          <i class="fas fa-quote-right"></i> Inspiration
+        </button>
+        <button class="menu-item" data-section="productivity">
+          <i class="fas fa-chart-line"></i> Productivity
+        </button>
+        <div class="theme-switcher">
+          <button id="light-theme-btn" class="theme-btn"><i class="fas fa-sun"></i> Light</button>
+          <button id="dark-theme-btn" class="theme-btn"><i class="fas fa-moon"></i> Dark</button>
+          <button id="premium-theme-btn" class="theme-btn premium"><i class="fas fa-crown"></i> Premium</button>
+        </div>
+        <button id="zen-mode-btn" class="menu-item">
+          <i class="fas fa-spa"></i> Zen Mode
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Default View -->
+      <div class="time-container">
+        <div id="current-time" class="time-text">Thứ Năm, 15 tháng 5, 2025</div>
+        <div id="time" class="time-text">21:45</div>
+        <div id="greeting" class="time-text">Good evening</div>
+      </div>
+      
+      <div class="focus-container">
+        <div class="focus-question">What is your main focus for today?</div>
+        <input type="text" id="focusInput" class="focus-input">
+        <div id="focusDisplay" class="focus-display"></div>
+      </div>
+
+      <!-- Focus Timer Section -->
+      <div id="focus-section" class="content-section hidden">
+        <h3><i class="fas fa-clock"></i> Focus Timer</h3>
+        <div id="pomodoro-timer">25:00</div>
+        <div class="timer-controls">
+          <button id="start-pomodoro" class="btn-primary">Start</button>
+          <button id="reset-pomodoro" class="btn-secondary">Reset</button>
+          <button id="stop-alarm" class="btn-secondary hidden">
+            <i class="fas fa-volume-mute"></i> Stop Alarm
+          </button>
+        </div>
+      </div>
+
+      <!-- To-Do List Section -->
+      <div id="todo-section" class="content-section hidden">
+        <h3><i class="fas fa-tasks"></i> To-Do List Pro</h3>
+        <div id="todo-empty">Add tasks to get started</div>
+        <ul id="todo-list"></ul>
+        <div class="todo-input-container">
+          <input type="text" id="todo-input" placeholder="New task...">
+          <select id="priority-select">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+          </select>
+          <button id="submit-todo">Add</button>
+        </div>
+        <div id="subtask-container" class="hidden">
+          <input type="text" id="subtask-input" placeholder="Add subtask...">
+          <button id="add-subtask">Add Subtask</button>
+        </div>
+      </div>
+
+      <!-- Weather Section -->
+      <div id="weather-section" class="content-section hidden">
+        <h3><i class="fas fa-cloud-sun"></i> Weather in Hanoi</h3>
+        <div class="weather-display">
+          <div id="weather-icon"><i class="fas fa-cloud-sun"></i></div>
+          <div id="weather-temp">30°C</div>
+          <div id="weather-desc">Partly Cloudy</div>
+        </div>
+      </div>
+
+      <!-- Notes Section -->
+      <div id="notes-section" class="content-section hidden">
+        <h3><i class="fas fa-edit"></i> Quick Notes</h3>
+        <textarea id="notes-area" placeholder="Write your notes here..."></textarea>
+        <button id="save-notes" class="btn-primary">Save</button>
+      </div>
+
+      <!-- Inspiration Section -->
+      <div id="inspiration-section" class="content-section hidden">
+        <h3><i class="fas fa-quote-right"></i> Daily Inspiration</h3>
+        <div class="quote-container">
+          <div id="quote">"The only way to do great work is to love what you do."</div>
+          <div id="author">- Steve Jobs</div>
+          <button id="new-quote-btn" class="btn-secondary">New Quote</button>
+        </div>
+      </div>
+
+      <!-- Productivity Section -->
+      <div id="productivity-section" class="content-section hidden">
+        <h3><i class="fas fa-chart-line"></i> Productivity Stats</h3>
+        <div class="stats-container">
+          <div class="stat-card">
+            <div class="stat-value" id="focus-hours">0</div>
+            <div class="stat-label">Focus Hours</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="tasks-completed">0</div>
+            <div class="stat-label">Tasks Completed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="productivity-score">0%</div>
+            <div class="stat-label">Productivity</div>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="productivity-chart"></canvas>
+        </div>
+        <div class="goal-setting">
+          <h4>Set Daily Goal</h4>
+          <input type="number" id="daily-goal" min="1" max="12" value="4">
+          <span>hours</span>
+          <button id="set-goal" class="btn-secondary">Set Goal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zen Mode Overlay -->
+  <div id="zen-mode" class="hidden">
+    <div id="zen-timer">25:00</div>
+    <div class="zen-controls">
+      <button id="exit-zen-mode" class="btn-primary">
+        <i class="fas fa-times"></i> Exit Zen Mode
+      </button>
+      <button id="toggle-ambient" class="btn-secondary">
+        <i class="fas fa-music"></i> Toggle Sound
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
