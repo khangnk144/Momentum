@@ -404,47 +404,103 @@ function saveTodos() {
 }
 
 // Weather Simulation
-function simulateWeather() {
-  const now = new Date();
-  const currentMonth = now.getMonth() + 1;
-  const hour = now.getHours();
+// function simulateWeather() {
+//   const now = new Date();
+//   const currentMonth = now.getMonth() + 1;
+//   const hour = now.getHours();
   
-  let baseTemp = 25;
-  if ([12, 1, 2].includes(currentMonth)) baseTemp = 15;
-  if ([3, 4, 5].includes(currentMonth)) baseTemp = 22;
-  if ([6, 7, 8].includes(currentMonth)) baseTemp = 32;
-  if ([9, 10, 11].includes(currentMonth)) baseTemp = 28;
+//   let baseTemp = 25;
+//   if ([12, 1, 2].includes(currentMonth)) baseTemp = 15;
+//   if ([3, 4, 5].includes(currentMonth)) baseTemp = 22;
+//   if ([6, 7, 8].includes(currentMonth)) baseTemp = 32;
+//   if ([9, 10, 11].includes(currentMonth)) baseTemp = 28;
   
-  if (hour >= 18 || hour <= 6) baseTemp -= 3;
+//   if (hour >= 18 || hour <= 6) baseTemp -= 3;
   
-  const temp = baseTemp + Math.floor(Math.random() * 10) - 5;
+//   const temp = baseTemp + Math.floor(Math.random() * 10) - 5;
   
-  const weatherTypes = [
-    { desc: "Sunny", icon: "sun" },
-    { desc: "Partly Cloudy", icon: "cloud-sun" },
-    { desc: "Cloudy", icon: "cloud" },
-    { desc: "Rainy", icon: "cloud-rain" }
-  ];
+//   const weatherTypes = [
+//     { desc: "Sunny", icon: "sun" },
+//     { desc: "Partly Cloudy", icon: "cloud-sun" },
+//     { desc: "Cloudy", icon: "cloud" },
+//     { desc: "Rainy", icon: "cloud-rain" }
+//   ];
   
-  if ([12, 1, 2].includes(currentMonth)) {
-    weatherTypes.push({ desc: "Snowy", icon: "snowflake" });
+//   if ([12, 1, 2].includes(currentMonth)) {
+//     weatherTypes.push({ desc: "Snowy", icon: "snowflake" });
+//   }
+  
+//   if (hour >= 18 || hour <= 6) {
+//     weatherTypes.push({ desc: "Clear Night", icon: "moon" });
+//   }
+  
+//   const weather = getRandomItem(weatherTypes);
+  
+//   state.weather = {
+//     temp: Math.round(temp),
+//     desc: weather.desc,
+//     icon: weather.icon
+//   };
+  
+//   setupWeather();
+// }
+// Weather API thực tế
+async function fetchWeather() {
+  const apiKey = '8fa42fb3fbc34ec88a631723251705';
+  const city = 'Ho Chi Minh';
+  const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&lang=en`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Network response was not ok');
+    const data = await response.json();
+    state.weather = {
+      temp: Math.round(data.current.temp_c),
+      desc: data.current.condition.text,
+      icon: mapWeatherIcon(data.current.condition.code, data.current.is_day)
+    };
+    setupWeather();
+  } catch (error) {
+    state.weather = {
+      temp: '--',
+      desc: 'Cannot fetch data',
+      icon: 'exclamation-triangle'
+    };
+    setupWeather();
   }
-  
-  if (hour >= 18 || hour <= 6) {
-    weatherTypes.push({ desc: "Clear Night", icon: "moon" });
-  }
-  
-  const weather = getRandomItem(weatherTypes);
-  
-  state.weather = {
-    temp: Math.round(temp),
-    desc: weather.desc,
-    icon: weather.icon
-  };
-  
-  setupWeather();
 }
+// async function fetchWeatherByCity(city) {
+//   const apiKey = '8fa42fb3fbc34ec88a631723251705';
+//   const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&lang=en`;
+//   try {
+//     const response = await fetch(url);
+//     if (!response.ok) throw new Error('Network response was not ok');
+//     const data = await response.json();
+//     state.weather = {
+//       temp: Math.round(data.current.temp_c),
+//       desc: data.current.condition.text,
+//       icon: mapWeatherIcon(data.current.condition.code, data.current.is_day)
+//     };
+//     setupWeather();
+//   } catch (error) {
+//     state.weather = {
+//       temp: '--',
+//       desc: 'Cannot fetch data',
+//       icon: 'exclamation-triangle'
+//     };
+//     setupWeather();
+//   }
+// }
 
+// Mapping WeatherAPI code to FontAwesome icon
+function mapWeatherIcon(code, isDay) {
+  if (code === 1000) return isDay ? 'sun' : 'moon';
+  if ([1003, 1006, 1009].includes(code)) return 'cloud';
+  if ([1030, 1135, 1147].includes(code)) return 'smog';
+  if ([1063, 1150, 1153, 1180, 1183, 1186, 1189, 1192, 1195, 1240, 1243, 1246].includes(code)) return 'cloud-rain';
+  if ([1066, 1069, 1072, 1114, 1117, 1210, 1213, 1216, 1219, 1222, 1225, 1255, 1258, 1261, 1264].includes(code)) return 'snowflake';
+  if ([1087, 1273, 1276, 1279, 1282].includes(code)) return 'bolt';
+  return 'cloud';
+}
 function setupWeather() {
   elements.weatherIcon.innerHTML = `<i class="fas fa-${state.weather.icon}"></i>`;
   elements.weatherTemp.textContent = `${state.weather.temp}°C`;
@@ -760,8 +816,9 @@ function init() {
   setupZenMode();
   setupProductivity();
   setRandomBackground();
-  simulateWeather();
-  
+  // simulateWeather();
+  fetchWeather();
+  setInterval(fetchWeather, 10 * 60 * 1000); // cập nhật mỗi 10 phút
   elements.startPomodoroBtn.addEventListener('click', () => startPomodoro(false));
   elements.resetPomodoroBtn.addEventListener('click', resetPomodoro);
   elements.stopAlarmBtn.addEventListener('click', () => {
@@ -772,6 +829,15 @@ function init() {
   window.addEventListener('beforeunload', savePomodoroState);
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+  // City weather select
+  const citySelect = document.getElementById('city-select');
+  if (citySelect) {
+    citySelect.addEventListener('change', function() {
+      fetchWeatherByCity(this.value);
+    });
+  }
+});
 document.addEventListener('DOMContentLoaded', init);
 
 
