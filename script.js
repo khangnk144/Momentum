@@ -268,30 +268,86 @@ if (localStorage.getItem('dailyFocus')) {
   focusInput.style.display = 'none';
 }
 
+// // Pomodoro Timer
+// let pomodoroInterval;
+
+// function startPomodoro() {
+//   if (!state.isPomodoroRunning) {
+//     state.isPomodoroRunning = true;
+//     elements.startPomodoroBtn.textContent = 'Pause';
+    
+//     pomodoroInterval = setInterval(() => {
+//       state.timeLeft--;
+//       updatePomodoroDisplay();
+      
+//       if (state.timeLeft <= 0) {
+//         clearInterval(pomodoroInterval);
+//         state.isPomodoroRunning = false;
+//         elements.startPomodoroBtn.textContent = 'Start';
+        
+//         const alarm = document.getElementById('timer-alarm');
+//         alarm.play();
+        
+//         alert("Time's up! Take a break");
+//         state.timeLeft = 5 * 60;
+//         updatePomodoroDisplay();
+//         document.getElementById('stop-alarm').classList.remove('hidden');
+//       }
+//     }, 1000);
+//   } else {
+//     clearInterval(pomodoroInterval);
+//     state.isPomodoroRunning = false;
+//     elements.startPomodoroBtn.textContent = 'Resume';
+//   }
+// }
+
+// function resetPomodoro() {
+//   clearInterval(pomodoroInterval);
+//   state.isPomodoroRunning = false;
+//   state.timeLeft = 25 * 60;
+//   updatePomodoroDisplay();
+//   elements.startPomodoroBtn.textContent = 'Start';
+//   document.getElementById('stop-alarm').classList.add('hidden');
+// }
+
+// function updatePomodoroDisplay() {
+//   elements.pomodoroTimer.textContent = formatTime(state.timeLeft);
+// }
+
+// ...existing code...
+
 // Pomodoro Timer
 let pomodoroInterval;
+let pomodoroMode = 'focus'; // 'focus' hoặc 'break'
 
 function startPomodoro() {
   if (!state.isPomodoroRunning) {
     state.isPomodoroRunning = true;
     elements.startPomodoroBtn.textContent = 'Pause';
-    
+
     pomodoroInterval = setInterval(() => {
       state.timeLeft--;
       updatePomodoroDisplay();
-      
+
       if (state.timeLeft <= 0) {
         clearInterval(pomodoroInterval);
         state.isPomodoroRunning = false;
         elements.startPomodoroBtn.textContent = 'Start';
-        
+
         const alarm = document.getElementById('timer-alarm');
         alarm.play();
-        
-        alert("Time's up! Take a break");
-        state.timeLeft = 5 * 60;
-        updatePomodoroDisplay();
         document.getElementById('stop-alarm').classList.remove('hidden');
+
+        if (pomodoroMode === 'focus') {
+          alert("Time's up! Take a 5-minute break");
+          state.timeLeft = 5 * 60;
+          pomodoroMode = 'break';
+        } else {
+          alert("Break is over! Time to focus for 25 minutes");
+          state.timeLeft = 25 * 60;
+          pomodoroMode = 'focus';
+        }
+        updatePomodoroDisplay();
       }
     }, 1000);
   } else {
@@ -305,6 +361,7 @@ function resetPomodoro() {
   clearInterval(pomodoroInterval);
   state.isPomodoroRunning = false;
   state.timeLeft = 25 * 60;
+  pomodoroMode = 'focus';
   updatePomodoroDisplay();
   elements.startPomodoroBtn.textContent = 'Start';
   document.getElementById('stop-alarm').classList.add('hidden');
@@ -313,6 +370,8 @@ function resetPomodoro() {
 function updatePomodoroDisplay() {
   elements.pomodoroTimer.textContent = formatTime(state.timeLeft);
 }
+
+// ...existing code...
 
 // To-Do List
 function setupTodoList() {

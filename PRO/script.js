@@ -49,6 +49,7 @@ const state = {
   currentSection: null,
   isPomodoroRunning: false,
   timeLeft: 25 * 60,
+   pomodoroMode: 'focus',
   pomodoroStartTime: null,
   todos: [],
   weather: {
@@ -190,36 +191,67 @@ function setupFocusInput() {
 }
 
 // Pomodoro Timer
+// let pomodoroInterval;
+
+// function startPomodoro(isAutoResume = false) {
+//   if (!state.isPomodoroRunning) {
+//     state.isPomodoroRunning = true;
+    
+//     if (!isAutoResume) {
+//       state.pomodoroStartTime = Date.now();
+//       state.productivity.lastTrackedTime = 25 * 60;
+//     }
+    
+//     elements.startPomodoroBtn.textContent = 'Pause';
+    
+//     clearInterval(pomodoroInterval);
+    
+//     pomodoroInterval = setInterval(() => {
+//       state.timeLeft--;
+//       updatePomodoroDisplay();
+      
+//       if ((25 * 60 - state.timeLeft) % (5 * 60) === 0 && state.timeLeft !== 25 * 60) {
+//         trackProductivity(5);
+//       }
+      
+//       if (state.timeLeft <= 0) {
+//         finishPomodoroSession();
+//       }
+      
+//       savePomodoroState();
+//     }, 1000);
+    
+//     savePomodoroState();
+//   } else {
+//     pausePomodoro();
+//   }
+// }
 let pomodoroInterval;
 
 function startPomodoro(isAutoResume = false) {
   if (!state.isPomodoroRunning) {
     state.isPomodoroRunning = true;
-    
+
     if (!isAutoResume) {
       state.pomodoroStartTime = Date.now();
-      state.productivity.lastTrackedTime = 25 * 60;
+      state.productivity.lastTrackedTime = (state.pomodoroMode === 'focus' ? 25 : 5) * 60;
     }
-    
+
     elements.startPomodoroBtn.textContent = 'Pause';
-    
+
     clearInterval(pomodoroInterval);
-    
+
     pomodoroInterval = setInterval(() => {
       state.timeLeft--;
       updatePomodoroDisplay();
-      
-      if ((25 * 60 - state.timeLeft) % (5 * 60) === 0 && state.timeLeft !== 25 * 60) {
-        trackProductivity(5);
-      }
-      
+
       if (state.timeLeft <= 0) {
         finishPomodoroSession();
       }
-      
+
       savePomodoroState();
     }, 1000);
-    
+
     savePomodoroState();
   } else {
     pausePomodoro();
@@ -242,38 +274,74 @@ function pausePomodoro() {
   savePomodoroState();
 }
 
+// function finishPomodoroSession() {
+//   clearInterval(pomodoroInterval);
+//   state.isPomodoroRunning = false;
+//   elements.startPomodoroBtn.textContent = 'Start';
+  
+//   const remainingMinutes = Math.floor(state.timeLeft / 60);
+//   const trackedMinutes = 25 - remainingMinutes;
+//   if (trackedMinutes > 0) {
+//     trackProductivity(trackedMinutes);
+//   }
+  
+//   const alarm = document.getElementById('timer-alarm');
+//   alarm.play();
+//   elements.stopAlarmBtn.classList.remove('hidden');
+  
+//   state.timeLeft = 5 * 60;
+//   updatePomodoroDisplay();
+//   savePomodoroState();
+  
+//   alert("Time's up! Take a 5-minute break");
+// }
+
+// function resetPomodoro() {
+//   clearInterval(pomodoroInterval);
+//   state.isPomodoroRunning = false;
+//   state.timeLeft = 25 * 60;
+//   updatePomodoroDisplay();
+//   elements.startPomodoroBtn.textContent = 'Start';
+//   elements.stopAlarmBtn.classList.add('hidden');
+//   savePomodoroState();
+// }
 function finishPomodoroSession() {
   clearInterval(pomodoroInterval);
   state.isPomodoroRunning = false;
   elements.startPomodoroBtn.textContent = 'Start';
-  
-  const remainingMinutes = Math.floor(state.timeLeft / 60);
-  const trackedMinutes = 25 - remainingMinutes;
-  if (trackedMinutes > 0) {
-    trackProductivity(trackedMinutes);
-  }
-  
+
   const alarm = document.getElementById('timer-alarm');
   alarm.play();
   elements.stopAlarmBtn.classList.remove('hidden');
-  
-  state.timeLeft = 5 * 60;
-  updatePomodoroDisplay();
-  savePomodoroState();
-  
-  alert("Time's up! Take a 5-minute break");
+
+  if (state.pomodoroMode === 'focus') {
+    // Kết thúc focus, chuyển sang break
+    trackProductivity(25);
+    state.timeLeft = 5 * 60;
+    state.pomodoroMode = 'break';
+    updatePomodoroDisplay();
+    savePomodoroState();
+    alert("Time's up! Take a 5-minute break");
+  } else {
+    // Kết thúc break, chuyển về focus
+    state.timeLeft = 25 * 60;
+    state.pomodoroMode = 'focus';
+    updatePomodoroDisplay();
+    savePomodoroState();
+    alert("Break is over! Time to focus for 25 minutes");
+  }
 }
 
 function resetPomodoro() {
   clearInterval(pomodoroInterval);
   state.isPomodoroRunning = false;
   state.timeLeft = 25 * 60;
+  state.pomodoroMode = 'focus';
   updatePomodoroDisplay();
   elements.startPomodoroBtn.textContent = 'Start';
   elements.stopAlarmBtn.classList.add('hidden');
   savePomodoroState();
 }
-
 function updatePomodoroDisplay() {
   elements.pomodoroTimer.textContent = formatTime(state.timeLeft);
   if (state.zenMode) {
