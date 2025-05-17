@@ -423,3 +423,30 @@ function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// ...existing code...
+document.addEventListener('DOMContentLoaded', function() {
+  const toggle = document.getElementById('switch-version-toggle');
+  if (!toggle) return;
+
+  // Nếu đang ở PRO thì bật toggle (dành cho PRO/index.html)
+  if (window.location.pathname.includes('/PRO/')) {
+    toggle.checked = true;
+    toggle.nextElementSibling.nextElementSibling.textContent = "PRO";
+    toggle.title = "Chuyển sang NORMAL";
+  } else {
+    toggle.checked = false;
+    toggle.nextElementSibling.nextElementSibling.textContent = "PRO";
+    toggle.title = "Chuyển sang PRO";
+  }
+
+  toggle.addEventListener('change', function() {
+    if (toggle.checked) {
+      // Sang PRO
+      window.location.href = window.location.pathname.replace('/NORMAL/', '/PRO/');
+    } else {
+      // Sang NORMAL
+      window.location.href = window.location.pathname.replace('/PRO/', '/NORMAL/');
+    }
+  });
+});

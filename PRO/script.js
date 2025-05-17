@@ -774,19 +774,28 @@ function init() {
 
 document.addEventListener('DOMContentLoaded', init);
 
-
-// ...existing code...
 document.addEventListener('DOMContentLoaded', function() {
   const toggle = document.getElementById('switch-version-toggle');
-  // Nếu đang ở bản PRO thì bật toggle
+  if (!toggle) return;
+
+  // Nếu đang ở PRO thì bật toggle (dành cho PRO/index.html)
   if (window.location.pathname.includes('/PRO/')) {
     toggle.checked = true;
+    toggle.nextElementSibling.nextElementSibling.textContent = "PRO";
+    toggle.title = "Chuyển sang NORMAL";
+  } else {
+    toggle.checked = false;
+    toggle.nextElementSibling.nextElementSibling.textContent = "PRO";
+    toggle.title = "Chuyển sang PRO";
   }
+
   toggle.addEventListener('change', function() {
     if (toggle.checked) {
-      window.location.pathname = window.location.pathname.replace('/NORMAL/', '/PRO/');
+      // Sang PRO
+      window.location.href = window.location.pathname.replace('/NORMAL/', '/PRO/');
     } else {
-      window.location.pathname = window.location.pathname.replace('/PRO/', '/NORMAL/');
+      // Sang NORMAL
+      window.location.href = window.location.pathname.replace('/PRO/', '/NORMAL/');
     }
   });
 });
