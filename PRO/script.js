@@ -774,11 +774,12 @@ function init() {
 
 document.addEventListener('DOMContentLoaded', init);
 
+
 document.addEventListener('DOMContentLoaded', function() {
   const toggle = document.getElementById('switch-version-toggle');
   if (!toggle) return;
 
-  // Đặt trạng thái toggle dựa trên đường dẫn
+  // Nếu đang ở PRO thì bật toggle, còn không thì tắt
   const path = window.location.pathname;
   if (path.toUpperCase().includes('/PRO/')) {
     toggle.checked = true;
@@ -791,23 +792,13 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   toggle.addEventListener('change', function() {
-    // Thay thế đúng phần NORMAL hoặc PRO trong URL
-    let newPath = path.replace(/\/NORMAL\//i, '/PRO/').replace(/\/PRO\//i, '/NORMAL/');
-    // Nếu đang ở NORMAL thì chuyển sang PRO, ngược lại thì chuyển sang NORMAL
     if (toggle.checked) {
-      if (!/\/PRO\//i.test(path)) {
-        newPath = path.replace(/\/NORMAL\//i, '/PRO/');
-      }
+      // Đang ở NORMAL, chuyển sang PRO
+      window.location.href = window.location.origin + window.location.pathname.replace(/\/$/, '') + '/PRO/';
     } else {
-      if (!/\/NORMAL\//i.test(path)) {
-        newPath = path.replace(/\/PRO\//i, '/NORMAL/');
-      }
+      // Đang ở PRO, chuyển về NORMAL (gốc)
+      const base = window.location.origin + window.location.pathname.split('/PRO/')[0];
+      window.location.href = base.endsWith('/') ? base : base + '/';
     }
-    // Nếu không tìm thấy NORMAL hoặc PRO trong path, chuyển về gốc + PRO/NORMAL
-    if (!/\/NORMAL\//i.test(path) && !/\/PRO\//i.test(path)) {
-      const base = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/') + '/';
-      newPath = base + (toggle.checked ? 'PRO/' : 'NORMAL/');
-    }
-    window.location.href = newPath;
   });
 });
